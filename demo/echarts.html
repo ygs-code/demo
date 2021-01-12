@@ -27,8 +27,13 @@
             charset="utf-8"
         ></script>
         <script type="text/javascript">
-        // http://tool.c7sky.com/webcolor/ 颜色
+            // http://tool.c7sky.com/webcolor/ 颜色
+            /*
+               ECharts 地图选择器 https://www.cnblogs.com/michelle20180227/p/12172030.html 
+               https://www.cnblogs.com/michelle20180227/p/12172030.html
+            */
             $(function () {
+                let index = 0;
                 //散点相关信息
                 var mapData = [
                     {
@@ -37,6 +42,7 @@
                         name: '碑林区',
                         value: 10,
                         color: '#ff6521',
+                        selected: true, // selected:true 默认选中
                     }, //碑林区
                     {
                         latitude: 34.213389,
@@ -52,13 +58,13 @@
                         value: 10,
                         // color: '#ECEA1F',
                     }, //未央区
-                    {
-                        latitude: 34.32,
-                        longitude: 108.913765,
-                        name: '未央区',
-                        value: 10,
-                        // color: '#ECEA1F',
-                    }, //未央区
+                    // {
+                    //     latitude: 34.32,
+                    //     longitude: 108.913765,
+                    //     name: '未央区',
+                    //     value: 10,
+                    //     // color: '#ECEA1F',
+                    // }, //未央区
                     {
                         latitude: 34.282,
                         longitude: 108.959903,
@@ -132,47 +138,88 @@
                     // [108.933194, 34.2656]
                 ];
 
-
-                var max=Math.max.apply(null, mapData.map((item)=>{
-                    return  item.value
-                }));
-                console.log('max=',max)
+                var max = Math.max.apply(
+                    null,
+                    mapData.map((item) => {
+                        return item.value;
+                    })
+                );
+                console.log('max=', max);
                 var dom = document.getElementById('map');
                 var myChart = echarts.init(dom);
-                var option1 = null;
+                var option = null;
                 myChart.showLoading(); //加载动画
 
                 $.get('./610100.json', function (result) {
                     myChart.hideLoading(); //关闭加载动画
                     echarts.registerMap(name, result); //加载地图数据
-                    option1 = {
+                    option = {
                         tooltip: {
                             trigger: 'item',
+                            // formatter: '{b}'
                             formatter: function (params) {
                                 // console.log('params=',params)
                                 // 返回参数弹窗参数
-                                return params.name;
+
+                                // var color = '#FFB84D';
+                                // var a =
+                                //     "<div style='background-color:" +
+                                //     color +
+                                //     ";padding: 5px 10px;text-align:center;color:white;font-size: 16px;'>" +
+                                //     params.name +
+                                //     '</div>';
+                                // var num = Math.ceil(
+                                //     params.data.name[1].length / 10
+                                // );
+                                // a += "<div style='padding:3px;'>";
+                                // for (var i = 0; i < num; i++) {
+                                //     a += params.name  +123 + '<br>';
+                                // }
+                                // a += '</div>';
+
+                                // return a;
+
+                                return `${params.name}<br/>value:${params.value[2]}`;
+                                // return params.name;
                             },
                         },
                         visualMap: {
                             //在展示每个区域数据量场景使用，不同的范围区域颜色调节
-                            left: 'right',
-                            min: 1,
-                            max: max,
+                            left: 'right', // 位置
+                            top: 'bottom', // 位置
+                            min: 1, //最小值
+                            max: max, // 最大值
+                            show: true, //图注
                             inRange: {
+                                //取值范围的颜色
                                 color: [
                                     'rgb(208, 226, 241)',
-                                    'rgb(46, 113, 198)',
+                                    // 'rgb(46, 113, 198)',
                                     'rgb(0, 44, 120)',
                                 ],
                             },
                             text: ['高', '低'], // 文本，默认为数值文本
                             calculable: true,
-                            show: true,
+                            // type: 'piecewise',
+                            // pieces: [
+                            //     { gt: 85, label: '85%以上', color: '#f54579' },
+                            //     {
+                            //         gt: 60,
+                            //         lte: 85,
+                            //         label: '60%-85%',
+                            //         color: '#614bd2',
+                            //     },
+                            //     {
+                            //         gt: 0,
+                            //         lte: 60,
+                            //         label: '60%以下',
+                            //         color: '#0789b8',
+                            //     },
+                            // ],
                         },
                         toolbox: {
                             show: false, //此字段表示是否显示或启用
-                            //orient: 'vertical', //工具栏
+                            orient: 'vertical', //工具栏
                             left: 'left',
                             top: 'top',
                             feature: {
@@ -188,6 +235,7 @@
                             zoom: 1.2, //地图初始大小，这里是关键，一定要放在 series中  因为geo在series中会加载，所以zoom放在此处
                             roam: true,
                             label: {
+                                // 显示字体
                                 normal: {
                                     show: true,
                                     color: '#333',
@@ -200,26 +248,68 @@
                             },
                             itemStyle: {
                                 normal: {
+                                    label: { show: true },
                                     borderColor: '#99CCCC', //区域边框颜色
                                     areaColor: '#CCFFFF', //区域填充颜色
+                                    borderWidth: 0.5,
                                 },
                                 emphasis: {
-                                    areaColor: '#99CCCC', // 鼠标放上去样式
-                                    borderWidth: 0,
+                                    label: { show: true },
+                                    areaColor: '#99CCCC', // 鼠标放上去样式 区域填充颜色
+                                    borderColor: (() => {})(), // '#99CCCC', //  鼠标放上去样式 区域边框颜色
+                                    borderWidth: 0.5,
                                 },
                             },
                         },
 
+                        // legend: {
+                        //     orient: 'vertical',
+                        //     right: 20,
+                        //     top: 10,
+                        //     data: [
+                        //         {
+                        //             name: '天气',
+                        //         },
+                        //         {
+                        //             name: '资金',
+                        //         },
+                        //         {
+                        //             name: '管理',
+                        //         },
+                        //         {
+                        //             name: '人员',
+                        //         },
+                        //     ],
+                        //     textStyle: {
+                        //         color: '#fff',
+                        //     },
+                        // },
+
                         series: [
                             {
-                                mapType: 'china', // 地图类型
+                                // mapType: 'china', // 地图类型
                                 // 是否开启鼠标缩放和平移漫游 默认不开启
                                 // 如果只想要开启缩放或者平移，可以设置成 'scale' 或者 'move' 设置成 true 为都开启
-                                roam: false,
-                                // 图形上的文本标签
+                                roam: true,
+                                name: '长沙',
+                                type: 'map',
+                                map: 'cs',
+                                // // 图形上的文本标签
+                                // label: {
+                                //     show: false, // 是否显示对应地名
+                                // },
                                 label: {
-                                    show: false, // 是否显示对应地名
+                                    // 是否显示对应地名
+                                    normal: {
+                                        show: true,
+                                    },
+                                    emphasis: {
+                                        show: true,
+                                    },
                                 },
+                                layoutCenter: ['50%', '50%'], //属性定义地图中心在屏幕中的位置，一般结合layoutSize 定义地图的大小
+
+                                selectedMode: 'multiple', // 选中效果固话
                                 // 地图区域的多边形 图形样式
                                 itemStyle: {
                                     areaColor: '#7B68EE', // 地图区域的颜色 如果设置了visualMap，areaColor属性将不起作用
@@ -255,8 +345,18 @@
 
                                     //散点生成
                                     return {
+                                        // tooltip: {
+                                        //     trigger: 'item',
+                                        //     // formatter: '{b}'
+                                        //     formatter: function (params) {
+                                        //         // console.log('params=',params)
+                                        //         // 返回参数弹窗参数
+                                        //         return params.name;
+                                        //     },
+                                        // },
+                                        selected: true, // selected:true 默认选中
                                         // 返回参数弹窗参数
-                                        name: `${itemOpt.name}<br/>value:${itemOpt.value}`,
+                                        name: itemOpt.name, // `${itemOpt.name}<br/>value:${itemOpt.value}`,
                                         value: [
                                             itemOpt.longitude,
                                             itemOpt.latitude,
@@ -269,11 +369,36 @@
                                                 position: 'right',
                                                 show: false,
                                             },
+                                            normal: {
+                                                show: false,
+                                            },
                                         },
                                         itemStyle: {
                                             normal: {
                                                 color: itemOpt.color, // 点的颜色
                                             },
+                                            // normal: {
+                                            //     color: 'red',
+                                            //     label: {
+                                            //         show: true,
+                                            //         textStyle: {
+                                            //             color: '#fff',
+                                            //             fontSize: 15,
+                                            //         },
+                                            //     },
+                                            // },
+                                            // emphasis: {
+                                            //     // 也是选中样式
+                                            //     borderWidth: 5,
+                                            //     borderColor: 'yellow',
+                                            //     areaColor: '#cd5c5c',
+                                            //     label: {
+                                            //         show: true,
+                                            //         textStyle: {
+                                            //             color: 'blue',
+                                            //         },
+                                            //     },
+                                            // },
                                         },
                                     };
                                 }),
@@ -281,15 +406,29 @@
                         ],
                     };
 
-                    myChart.setOption(option1, true);
+                    // option['legend'] = {
+                    //     data: {
+                    //         ...option.series[0].data,
+                    //     },
+                    // };
+                    myChart.setOption(option, true);
                     window.addEventListener('resize', function () {
                         //浏览器大小调整echarts随之改变
                         myChart.resize();
                     });
                     myChart.on('click', function (params) {
                         //地图区域点击时的联动   根据params的值来联动对应数据
-                        console.log(params); //此处写点击事件内容
-                        alert(params.name);
+                        console.log('params==', params); //此处写点击事件内容
+                        index = mapData.findIndex((item) => {
+                            return params.name == item.name;
+                        });
+                        console.log('index=', index);
+                        // index
+                        // alert(params.name);
+                    });
+
+                    myChart.on('mapselected', function (param) {
+                        console.log('param=', param);
                     });
                 });
             });
