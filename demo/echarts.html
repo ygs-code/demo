@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>陕西西安市地图</title>
+        <style type="text/css">
+            body,
+            html {
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .map-box {
+                margin: 30px auto;
+                width: 1200px;
+                height: 500px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="map-box" id="map"></div>
+
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+        <script
+            src="./echarts.min.js"
+            type="text/javascript"
+            charset="utf-8"
+        ></script>
+        <script type="text/javascript">
+        // http://tool.c7sky.com/webcolor/ 颜色
+            $(function () {
+                //散点相关信息
+                var mapData = [
+                    {
+                        latitude: 34.24,
+                        longitude: 108.946994,
+                        name: '碑林区',
+                        value: 10,
+                        color: '#ff6521',
+                    }, //碑林区
+                    {
+                        latitude: 34.213389,
+                        longitude: 108.88,
+                        name: '雁塔区',
+                        value: 15,
+                        color: '#ff6521',
+                    }, //雁塔区
+                    {
+                        latitude: 34.38,
+                        longitude: 108.946022,
+                        name: '未央区',
+                        value: 10,
+                        // color: '#ECEA1F',
+                    }, //未央区
+                    {
+                        latitude: 34.32,
+                        longitude: 108.913765,
+                        name: '未央区',
+                        value: 10,
+                        // color: '#ECEA1F',
+                    }, //未央区
+                    {
+                        latitude: 34.282,
+                        longitude: 108.959903,
+                        name: '新城区',
+                        value: 10,
+                        // color: '#ECEA1F',
+                    }, //新城区
+                    {
+                        latitude: 34.0,
+                        longitude: 108.1,
+                        name: '周至县',
+                        value: 10,
+                        // color: '#ECEA1F',
+                    }, //周至县
+                    {
+                        latitude: 34.05,
+                        longitude: 108.607385,
+                        name: '鄂邑区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //鄂邑区
+                    {
+                        latitude: 34.08,
+                        longitude: 108.941579,
+                        name: '长安区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //长安区
+                    {
+                        latitude: 34.156189,
+                        longitude: 109.317634,
+                        name: '蓝田县',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //蓝田县
+                    {
+                        latitude: 34.535065,
+                        longitude: 109.088896,
+                        name: '高陵区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //高陵区
+                    {
+                        latitude: 34.662141,
+                        longitude: 109.21,
+                        name: '阎良区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //阎良区
+                    {
+                        latitude: 34.465,
+                        longitude: 109.213986,
+                        name: '临潼区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //临潼区
+                    {
+                        latitude: 34.305,
+                        longitude: 109.067261,
+                        name: '灞桥区',
+                        value: 5,
+                        // color: '#ECEA1F',
+                    }, //灞桥区
+                    {
+                        latitude: 34.2656,
+                        longitude: 108.933194,
+                        name: '莲湖区',
+                        value: 5,
+                        //// color: '#ECEA1F',
+                    }, //莲湖区
+                    // [108.933194, 34.2656]
+                ];
+
+
+                var max=Math.max.apply(null, mapData.map((item)=>{
+                    return  item.value
+                }));
+                console.log('max=',max)
+                var dom = document.getElementById('map');
+                var myChart = echarts.init(dom);
+                var option1 = null;
+                myChart.showLoading(); //加载动画
+
+                $.get('./610100.json', function (result) {
+                    myChart.hideLoading(); //关闭加载动画
+                    echarts.registerMap(name, result); //加载地图数据
+                    option1 = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: function (params) {
+                                // console.log('params=',params)
+                                // 返回参数弹窗参数
+                                return params.name;
+                            },
+                        },
+                        visualMap: {
+                            //在展示每个区域数据量场景使用，不同的范围区域颜色调节
+                            left: 'right',
+                            min: 1,
+                            max: max,
+                            inRange: {
+                                color: [
+                                    'rgb(208, 226, 241)',
+                                    'rgb(46, 113, 198)',
+                                    'rgb(0, 44, 120)',
+                                ],
+                            },
+                            text: ['高', '低'], // 文本，默认为数值文本
+                            calculable: true,
+                            show: true,
+                        },
+                        toolbox: {
+                            show: false, //此字段表示是否显示或启用
+                            //orient: 'vertical', //工具栏
+                            left: 'left',
+                            top: 'top',
+                            feature: {
+                                dataView: {
+                                    readOnly: false,
+                                },
+                                restore: {},
+                                saveAsImage: {},
+                            },
+                        },
+                        geo: {
+                            type: 'map',
+                            zoom: 1.2, //地图初始大小，这里是关键，一定要放在 series中  因为geo在series中会加载，所以zoom放在此处
+                            roam: true,
+                            label: {
+                                normal: {
+                                    show: true,
+                                    color: '#333',
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff',
+                                    },
+                                },
+                            },
+                            itemStyle: {
+                                normal: {
+                                    borderColor: '#99CCCC', //区域边框颜色
+                                    areaColor: '#CCFFFF', //区域填充颜色
+                                },
+                                emphasis: {
+                                    areaColor: '#99CCCC', // 鼠标放上去样式
+                                    borderWidth: 0,
+                                },
+                            },
+                        },
+
+                        series: [
+                            {
+                                mapType: 'china', // 地图类型
+                                // 是否开启鼠标缩放和平移漫游 默认不开启
+                                // 如果只想要开启缩放或者平移，可以设置成 'scale' 或者 'move' 设置成 true 为都开启
+                                roam: false,
+                                // 图形上的文本标签
+                                label: {
+                                    show: false, // 是否显示对应地名
+                                },
+                                // 地图区域的多边形 图形样式
+                                itemStyle: {
+                                    areaColor: '#7B68EE', // 地图区域的颜色 如果设置了visualMap，areaColor属性将不起作用
+                                    borderWidth: 0.5, // 描边线宽 为 0 时无描边
+                                    borderColor: '#000', // 图形的描边颜色 支持的颜色格式同 color，不支持回调函数
+                                    borderType: 'solid', // 描边类型，默认为实线，支持 'solid', 'dashed', 'dotted'
+                                },
+                                // 高亮状态下的多边形和标签样式
+                                emphasis: {
+                                    label: {
+                                        show: true, // 是否显示标签
+                                        color: '#fff', // 文字的颜色 如果设置为 'auto'，则为视觉映射得到的颜色，如系列色
+                                    },
+                                    itemStyle: {
+                                        areaColor: '#FF6347', // 地图区域的颜色
+                                    },
+                                },
+                                barWidth: 26, // 柱形宽度（折线图无）
+                                type: 'effectScatter',
+                                coordinateSystem: 'geo',
+                                animation: true,
+                                rippleEffect: {
+                                    brushType: 'stroke',
+                                },
+                                symbolSize: function (val, params) {
+                                    //散点大小
+                                    // console.log('val===', val);
+                                    // console.log('params===', params);
+                                    return val[2];
+                                },
+                                data: mapData.map(function (itemOpt) {
+                                    console.log('itemOpt=', itemOpt);
+
+                                    //散点生成
+                                    return {
+                                        // 返回参数弹窗参数
+                                        name: `${itemOpt.name}<br/>value:${itemOpt.value}`,
+                                        value: [
+                                            itemOpt.longitude,
+                                            itemOpt.latitude,
+                                            itemOpt.value,
+                                        ],
+
+                                        label: {
+                                            emphasis: {
+                                                // name: '123',
+                                                position: 'right',
+                                                show: false,
+                                            },
+                                        },
+                                        itemStyle: {
+                                            normal: {
+                                                color: itemOpt.color, // 点的颜色
+                                            },
+                                        },
+                                    };
+                                }),
+                            },
+                        ],
+                    };
+
+                    myChart.setOption(option1, true);
+                    window.addEventListener('resize', function () {
+                        //浏览器大小调整echarts随之改变
+                        myChart.resize();
+                    });
+                    myChart.on('click', function (params) {
+                        //地图区域点击时的联动   根据params的值来联动对应数据
+                        console.log(params); //此处写点击事件内容
+                        alert(params.name);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

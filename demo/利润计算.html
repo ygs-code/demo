@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            function getProfit(y, date) {
+                let i = 0;
+                let profit = 0;
+                while (i < date) {
+                    i++;
+                    y = y + y * 0.01;
+                    console.log(`第${i}天获取利润和本金等于:${y}`);
+                }
+                return y;
+            }
+            getProfit(40000, 200 * 1);
+        </script>
+    </body>
+</html>

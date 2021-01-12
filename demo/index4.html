@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Title</title>
+    </head>
+    <script src="./lodash.min.js"></script>
+    <body>
+        <script type="text/javascript">
+    
+              function fun1(
+                  num,
+                  callback 
+              ){
+                 if(num==2||num==3){
+                    callback(num);
+                 }
+              }
+
+              function fun2(num){
+                  console.log('numfun2==',num)
+              }
+
+              function fun3(num){
+                  console.log('numfun3==',num)
+              }
+              function fun4(num){
+                  console.log('numfun4==',num)
+              }
+
+
+           
+             fun1(2,fun2)
+             fun1(3,fun3)
+             fun1(3,fun4)
+        </script>
+    </body>
+</html>

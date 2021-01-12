@@ -1,0 +1,57 @@
+<html>
+<head>
+</head>
+<body>
+</body>
+<!-- <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.0.943/build/pdf.min.js"></script> -->
+<script src="./pdf.min.js"></script>
+<script type="text/javascript">
+
+var currPage = 1;
+var numPages = 0;
+var thePDF = null;
+ 
+pdfjsLib.getDocument('./RS-15-SPEC-CN.PDF').then(function(pdf) {
+        thePDF = pdf;
+        numPages = pdf.numPages;
+        pdf.getPage( 1 ).then( handlePages );
+});
+
+
+
+function handlePages(page)
+{
+    console.log('document.body.clientWidth=',document.body.clientWidth/800)
+    // 缩放比例
+    var viewport = page.getViewport(document.body.clientWidth/700 );
+
+
+    var canvas = document.createElement( "canvas" );
+    var context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    page.render({canvasContext: context, viewport: viewport});
+    document.body.appendChild( canvas );
+    currPage++;
+    if ( thePDF !== null && currPage <= numPages )
+    {
+        thePDF.getPage( currPage ).then( handlePages );
+    }else{
+        canvasfunc();
+    }
+}
+
+var image = [];
+
+function canvasfunc(){
+    for(var i = 0; i < document.getElementsByTagName("canvas").length; i++){
+    var canvases = document.getElementsByTagName("canvas")[i];
+    image[i] = new Image();
+    image[i].src = canvases.toDataURL("image/png");
+    document.body.appendChild(image[i]);
+}
+}
+
+</script>
+
+</html>

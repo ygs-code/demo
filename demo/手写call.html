@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            Function.prototype.myCall = function (thisArg, ...args) {
+                thisArg.fn = this; // this指向调用call的对象,即我们要改变this指向的函数
+                return thisArg.fn(...args); // 执行函数并return其执行结果
+            };
+            var _this='123'
+            function abc(){
+                console.log(this)
+            }
+            abc.call(_this)
+            console.dir(abc)
+        </script>
+    </body>
+</html>

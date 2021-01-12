@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Title</title>
+    </head>
+    <script src="./lodash.min.js"></script>
+    <body>
+        <script type="text/javascript">
+             
+                        // console.log(_.set) 
+                        var list = [];
+                        var fields = {
+                            'list[0].name': {
+                                value: 'name0',
+                            },
+                            'list[1].name': {
+                                value: 'name1',
+                            },
+                            'list[2].name': {
+                                value: 'name2',
+                            },
+
+                            'list[0].age': {
+                                value: 'age0',
+                            },
+                            'list[1].age': {
+                                value: 'age1',
+                            },
+                            'list[2].age': {
+                                value: 'age2',
+                            },
+                        };
+                        var keys = Object.keys(fields);
+                        console.log('keys=', keys);
+                        var values = keys.reduce((acc, next) => {
+                            return _.set(acc,next, fields[next].value)
+                            // 不用set 就不会合并成一个对象
+                            // acc = {
+                            //     ...acc,
+                            //     [next]: fields[next].value,
+                            // };
+                            // return acc;
+                        }, {});
+                        console.log('values=', values);
+        </script>
+    </body>
+</html>
